@@ -5,3 +5,8 @@ idna==3.7
 requests==2.32.3
 soupsieve==2.5
 urllib3==2.2.1
+fpdf
+pypdf
+langchain-ollama
+fitz
+pymupdf

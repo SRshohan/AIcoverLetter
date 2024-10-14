@@ -10,12 +10,34 @@ def get_job_description(url):
         # Parse the HTML content using BeautifulSoup
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Find the div with data-automation-id="jobPostingDescription"
-        description_div = soup.find('div', {'data-automation-id': 'jobPostingDescription'})
+        # Attempt to find the job description using common tags and classes
+        description = None
         
-        if description_div:
-            # Extract and return the text content of the div
-            return description_div.get_text(strip=True)
+        # Try different common selectors to find the job description
+        possible_selectors = [
+            'div[class*="job-description"]',
+            'div[id*="job-description"]',
+            'div[class*="description"]',
+            'div[id*="description"]',
+            'section[class*="job-description"]',
+            'section[id*="job-description"]',
+            'section[class*="description"]',
+            'section[id*="description"]',
+            'article[class*="job-description"]',
+            'article[id*="job-description"]',
+            'article[class*="description"]',
+            'article[id*="description"]',
+            'div[data-automation-id="jobPostingDescription"]'
+        ]
+        
+        for selector in possible_selectors:
+            description_div = soup.select_one(selector)
+            if description_div:
+                description = description_div.get_text(strip=True)
+                break
+        
+        if description:
+            return description
         else:
             return "Job description not found."
     
