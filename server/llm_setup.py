@@ -4,7 +4,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_community.vectorstores import LanceDB
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings  # for free embeddings
-from setup_input import extract_data, generate_pdf, job_description
+from server.setup_vectordb import extract_data, generate_pdf, job_description
 
 
 def localllm():
