@@ -5,6 +5,12 @@ from langchain_community.vectorstores import LanceDB
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings  # for free embeddings
 from server.setup_vectordb import extract_data, generate_pdf, job_description
+import json
+
+
+def convert_to_json(query):
+    query = json.loads(query)
+    return query
 
 
 def localllm():
@@ -15,7 +21,7 @@ def localllm():
 
 def embeddings():
     embedding = HuggingFaceEmbeddings(model_name = "BAAI/bge-small-en")  # or "BAAI/bge-large-en" for a larger model
-    return embeddings
+    return embedding
 
 
 def text_splitter_semantic(document_text, embedding):
