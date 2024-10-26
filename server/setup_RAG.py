@@ -5,7 +5,7 @@ import os
 
 
 
-def query_rag(query_text, CHROMA_PATH):
+def query_rag(CHROMA_PATH, embedding, PROMPT_TEMPLATE, llm):
     """
     Query a Retrieval-Augmented Generation (RAG) system using Chroma database and OpenAI.
     Args:
@@ -14,6 +14,7 @@ def query_rag(query_text, CHROMA_PATH):
         - formatted_response (str): Formatted response including the generated text and sources.
         - response_text (str): The generated response text.
     """
+    query_text = "Find valuable information like job title, company name, company vison, goals & culture"
     # Ensure embedding function is initialized
     embedding_function = embedding
 
@@ -22,8 +23,6 @@ def query_rag(query_text, CHROMA_PATH):
 
     # Retrieving the context from the DB using similarity search
     results = db.similarity_search_with_relevance_scores(query_text, k=3)
-
-
 
     # Check if there are any matching results or if the relevance score is too low
     if len(results) == 0 or results[0][1] < 0.5:  # Lower the threshold for testing

@@ -43,7 +43,7 @@ def save_to_chroma(chunks, embedding, CHROMA_PATH):
   if os.path.exists(CHROMA_PATH):
     shutil.rmtree(CHROMA_PATH)
 
-  # Create a new Chroma database from the documents using OpenAI embeddings
+  # Create a new Chroma database from the documents 
   db = Chroma.from_documents(
     chunks,
     embedding,
