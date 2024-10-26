@@ -10,3 +10,6 @@ pypdf
 langchain-ollama
 fitz
 pymupdf
+streamlit
+langchain-huggingface
+
