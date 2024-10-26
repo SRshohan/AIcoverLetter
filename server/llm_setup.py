@@ -3,8 +3,8 @@ from langchain_community.chat_models import ChatOllama
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_community.vectorstores import LanceDB
 from langchain_experimental.text_splitter import SemanticChunker
-from langchain.embeddings.huggingface import HuggingFaceEmbeddings  # for free embeddings
-from server.setup_vectordb import extract_data, generate_pdf, job_description
+from langchain.embeddings import HuggingFaceEmbeddings  # for free embeddings
+from setup_vectordb import extract_data, generate_pdf
 import json
 
 
