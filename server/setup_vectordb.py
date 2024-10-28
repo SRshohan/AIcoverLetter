@@ -1,4 +1,4 @@
-from langchain.vectorstores.chroma import Chroma # Importing Chroma vector store from Langchain
+from langchain_community.vectorstores import Chroma # Importing Chroma vector store from Langchain
 import shutil
 import fitz
 from fpdf import FPDF
@@ -16,16 +16,20 @@ def generate_pdf(filled_cover_letter):
         pdf.cell(200, 10, txt=line, ln=True)
 
 def extract_data(pdf_file):
-    # Prepare the data for the template
-    if os.path.exists(pdf_file):
-        doc = fitz.open(pdf_file)
+    # Check if the PDF file exists
+    if pdf_file:
+        # Open the PDF file from the BytesIO object
+        doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
         text = ""
+        
+        # Iterate over each page in the document and extract text
         for page in doc:
-            text+=page.get_text()
-        print(text)
+            text += page.get_text()
+
         return text
     else:
-        print("File doesnt exists!")
+        return "No file uploaded."
+
 
 
 # Path to the directory to save Chroma database
@@ -43,7 +47,7 @@ def save_to_chroma(chunks, embedding, CHROMA_PATH):
   if os.path.exists(CHROMA_PATH):
     shutil.rmtree(CHROMA_PATH)
 
-  # Create a new Chroma database from the documents using OpenAI embeddings
+  # Create a new Chroma database from the documents 
   db = Chroma.from_documents(
     chunks,
     embedding,
