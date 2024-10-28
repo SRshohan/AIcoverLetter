@@ -1,18 +1,31 @@
 import streamlit as st
 import datetime
 from langchain_community.chat_models import ChatOllama
-from setup_vectordb import extract_data
-import fitz
+from setup_vectordb import extract_data, save_to_chroma
+from setup_RAG import query_rag
+from llm_setup import embeddings, localllm, text_splitter_semantic
 
 # Function to generate cover letter
-def generate_cover_letter_open_source(job_description, resume):
-    name = 'Sohanur'
+def generate_cover_letter_open_source(job_description, resume, name):
+    # Contact Information
     address = "Bronx, New York, 10462"
     email = "srahman06@manhattan.edu"
     phone = "(929) 412 6398"
     date = datetime.date.today()
+    
+    # Embeddings and local LLM setup
+    embedding = embeddings()
+    llm = localllm()
+    
+    text_split = text_splitter_semantic(job_description, embedding)
+    save_to_chroma(text_split, embedding, name)
+    # System prompt template for RAG
+    system_prompt = f"Use this system prompt to retrieve and understand the job description based on the provided job titles, company culture, responsibilities, and other key aspects."
+    
+    # Query the job description using RAG
+    job_desc = query_rag(name, embedding, system_prompt, llm)
 
-    # Create the prompt for the LLM
+    # Create the prompt for the LLM (for generating the cover letter)
     prompt = (f"Imagine you are a world-renowned career strategist with decades of experience in creating compelling resumes that have helped countless individuals land their dream jobs. "
               f"Your expertise lies in crafting resumes that not only showcase a candidate's skills and experiences but also weave in their unique story in a way that resonates with leading employers across various industries. "
               f"Your secret lies in your ability to humanize each resume, transforming it into a narrative that highlights the candidate’s journey, achievements, and aspirations.\n\n"
@@ -24,16 +37,20 @@ def generate_cover_letter_open_source(job_description, resume):
               f"c) A final paragraph explaining why the company might be interested in the candidate based on the given company info.\n"
               f"Return ONLY a cover letter with the following structure:\n"
               f"{name}\n{address}\n{email}\n{phone}\n{date}\n\n"
-              f"Job Description: '{job_description}'. Resume: '{resume}'")
+              f"Job Description as dictionary or json format: '{job_desc}'. Resume: '{resume}'")
 
-    # Initialize the language model
+    # Initialize the language model and generate the response
     llm = ChatOllama(model="llama3.2:3b", temperature=0)
     llm_response = llm.invoke(prompt)
 
     return llm_response
 
+
 # Streamlit app
 st.title('AI-Powered Cover Letter Generator')
+
+# Input field for the name
+name = st.text_input("Enter Your Name")
 
 # Input fields for the job description
 job_description = st.text_area("Enter the Job Description", height=300)
@@ -51,9 +68,9 @@ if uploaded_file:
 
 # Generate button
 if st.button('Generate Cover Letter'):
-    if job_description and uploaded_file:
-        cover_letter = (generate_cover_letter_open_source(job_description, resume_text)).content
+    if job_description and uploaded_file and name:
+        cover_letter = generate_cover_letter_open_source(job_description, resume_text, name).content
         st.subheader("Generated Cover Letter:")
         st.write(cover_letter)
     else:
-        st.error("Please enter the job description and upload your resume.")
+        st.error("Please enter your name, the job description, and upload your resume.")
